@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import { createNewBinId } from './helpers'
 
 const app = express();
@@ -8,6 +9,7 @@ app.use((req: any, _, next) => {
   console.log('Subdomain:', req.headers.host.split('.')[0]);
   next();
 });
+
 
 // // Middleware to handle all request methods for the same path
 app.use('/r/:bin_id', (req, res) => {
@@ -20,7 +22,11 @@ app.use('/r/:bin_id', (req, res) => {
   res.send(`Handled ${req.method} request`);
 });
 
-app.get('/', (req, res) => {
+// To serve public directory for the path '/static'
+app.use('/static', express.static(path.join(__dirname, '../client/public')));
+
+app.get('/', (_, res) => {
+
   res.send('<h1>Hello World!</h1>');
   console.log(`Method: ${req.method}`);
   console.log(`URL: ${req.url}`);
