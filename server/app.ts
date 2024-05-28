@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import createNewBinId from './helpers';
+import { createNewBinId } from './helpers'
 
 const app = express();
 const port = 3000;
@@ -14,10 +14,6 @@ app.use((req: any, _, next) => {
 app.use('/static', express.static(path.join(__dirname, '../client/public')));
 
 app.get('/', (_, res) => {
-  const binId = createNewBinId()
-  console.log(binId)
-  console.log(path.join(__dirname, '../client/public'))
-
   res.send('<h1>Hello World!</h1>');
   // console.log(`Method: ${req.method}`);
   // console.log(`URL: ${req.url}`);
@@ -36,12 +32,20 @@ app.get('/', (_, res) => {
   // 
 });
 
-// Serving up static html from client folder
-app.get('/static_html', (_, res) => {
-  res.sendFile(path.join(__dirname, '../client/public', 'index.html'))
-  console.log(path.join(__dirname, '../client/public', 'index.html'));
-});
+app.get('/r', async (_, res) => {
+  // create new bin id
+  // add check to ensure not a duplicate
+  // store bin id in postgres
+  const binId = await createNewBinId()
+  console.log(binId)
 
+  // redirect to /:bin_id
+  res.redirect(`/r/${binId}`)
+})
+
+app.get('/r/:bin_id', (_, res) => {
+  res.send('<h1>Worked!</h1>')
+})
 
 
 app.listen(port, () =>
