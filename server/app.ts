@@ -1,6 +1,7 @@
 import express from 'express';
 import createNewBinId from './helpers'
 
+const path = require('path')
 const app = express();
 const port = 3000;
 
@@ -12,6 +13,7 @@ app.use((req: any, _, next) => {
 app.get('/', (_, res) => {
   const binId = createNewBinId()
   console.log(binId)
+  console.log(path.join(__dirname, '../client/public'))
 
   res.send('<h1>Hello World!</h1>');
   // console.log(`Method: ${req.method}`);
@@ -29,6 +31,12 @@ app.get('/', (_, res) => {
 
   
   // 
+});
+
+// Serving up static html from client folder
+app.get('/static_html', (_, res) => {
+  res.sendFile(path.join(__dirname, '../client/public', 'index.html'))
+  console.log(path.join(__dirname, '../client/public', 'index.html'));
 });
 
 
