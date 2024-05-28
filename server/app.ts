@@ -1,5 +1,5 @@
 import express from 'express';
-import createNewBinId from './helpers'
+import { writeBinId } from './helpers'
 
 const app = express();
 const port = 3000;
@@ -10,9 +10,6 @@ app.use((req: any, _, next) => {
 });
 
 app.get('/', (_, res) => {
-  const binId = createNewBinId()
-  console.log(binId)
-
   res.send('<h1>Hello World!</h1>');
   // console.log(`Method: ${req.method}`);
   // console.log(`URL: ${req.url}`);
@@ -31,6 +28,20 @@ app.get('/', (_, res) => {
   // 
 });
 
+app.get('/r', async (_, res) => {
+  // create new bin id
+  // add check to ensure not a duplicate
+  // store bin id in postgres
+  const binId = await writeBinId()
+  console.log(binId)
+
+  // redirect to /:bin_id
+  res.redirect(`/r/${binId}`)
+})
+
+app.get('/r/:bin_id', (_, res) => {
+  res.send('<h1>Worked!</h1>')
+})
 
 
 app.listen(port, () =>
