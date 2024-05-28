@@ -43,6 +43,14 @@ app.get('/r/:bin_id', (_, res) => {
   res.send('<h1>Worked!</h1>')
 })
 
+app.post('/r/:bin_id', (req, res) => {
+  // https://9920-2603-8001-6600-f56-116d-2dc1-9df0-55a8.ngrok-free.app/r/67a73cd879824
+  console.log(`Method: ${req.method}`);
+  console.log(`URL: ${req.url}`);
+  console.log('Headers:', req.headers);
+  console.log('Query Params:', req.query);
+  console.log('Body:', req.body);
+})
 
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`),
