@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Bin Title</h1>
+    <p>Endpoint: https://captainhook.xyz/asdfpoie</p>
+    <button>Copy</button>
+    <!-- Press this sends a POST request to generate new bin -->
+    <button>**New**</button>
+  </header>
+  
+  <!-- On page load: send GET request to populate this list with requests from specific endpoint -->
+  <main>
+    <section>
+      <h2 class="date">Today</h2>
+      <label for="search">Search</label>
+      <input type="text" id="search">
+      <ul>
+        <li>
+          <!-- Clicking this will send GET for request info for this request, and populate the right side with info-->
+          <button>** Time | Method | Path **</button>
+        </li>
+        <li>
+          <button>** Time | Method | Path **</button>
+        </li>
+      </ul>
+    </section>
+  
+    <!-- This area is populated when a specific request above is pressed -->
+    <section>
+      <h2>Request Details</h2>
+      <article>
+        <h3>Path</h3>
+        <ul>
+          <li>path</li>
+        </ul>
+      </article>
+      <article>
+        <h3>Headers</h3>
+        <ul>
+          <li>header1</li>
+          <li>header2</li>
+          <li>header3</li>
+        </ul>
+      </article>
+      <article>
+        <h3>Query</h3>
+        <ul>
+          <li>query param 1</li>
+          <li>query param 2</li>
+          <li>query param 3</li>
+        </ul>
+      </article>
+    </section>
+  </main>  
+</body>
+</html>
