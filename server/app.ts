@@ -1,7 +1,7 @@
 import express from 'express';
-import createNewBinId from './helpers'
+import path from 'path';
+import createNewBinId from './helpers';
 
-const path = require('path')
 const app = express();
 const port = 3000;
 
@@ -9,6 +9,9 @@ app.use((req: any, _, next) => {
   console.log('Subdomain:', req.headers.host.split('.')[0]);
   next();
 });
+
+// To serve public directory for the path '/static'
+app.use('/static', express.static(path.join(__dirname, '../client/public')));
 
 app.get('/', (_, res) => {
   const binId = createNewBinId()
