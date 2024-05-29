@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable camelcase */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -78,3 +81,42 @@ export async function addToPostgres(
     }
   }
 }
+
+export async function getRequestsFromPostgres(binId: string): Promise<any> {
+  try {
+    const query = `
+    SELECT path_name, method, request_id, to_char(created_at, 
+    'HH24:MI:SS') || ' ' || to_char(created_at, 'FMMonth DD, YYYY') as created_at FROM request r
+    JOIN request_bin b ON b.id = r.requestbin_id
+    WHERE b.bin_id = $1;
+    `;
+
+    const result = await pool.query(query, [binId]);
+    console.log(result.rows);
+    return result.rows.map((obj: any) => {
+      const { path_name, method, request_id, created_at } = obj;
+      return { path: path_name, method, id: request_id, time: created_at };
+    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
+
+// CREATE DATABASE cpt_webhook_psql OWNER dev_user;
+// GRANT ALL PRIVILEGES ON DATABASE
+// cpt_webhook_psql TO dev_user;
+// Path: http://localhost:3000/bin/XyZ123Abc4567
+
+// app.get('/api/:bin_id', (_, res) => {
+//   // logic to get all requests for a specific binId
+//   // interacting with postgres to select all requests from request where requestbin_id == binId
+//   console.log('path is /api/:bin_id');
+//   const requests =
+//   // res.json([
+//   //   { path: 'google.com', method: 'POST', time: '3:00PM', id: requestId },
+//   //   { path: 'stuff.com', method: 'GET', time: '12:00PM', id: requestId },
+//   //   { path: 'not.com', method: 'POST', time: '5:00AM', id: requestId },
+//   // ]);
+// });
