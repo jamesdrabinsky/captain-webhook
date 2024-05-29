@@ -10,9 +10,10 @@ CREATE TABLE request_bin (
 CREATE TABLE request (
     id SERIAL PRIMARY KEY,
     requestbin_id INTEGER NOT NULL REFERENCES request_bin(id) ON DELETE CASCADE,
-    mongo_key VARCHAR(50),
+    mongo_key VARCHAR(50) NOT NULL UNIQUE,
     method VARCHAR(10),
     path_name VARCHAR(100),
+    request_id VARCHAR(50) NOT NULL UNIQUE,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
