@@ -1,5 +1,5 @@
 import express from 'express';
-import { createNewBinId } from './helpers'
+import { createNewBinId, addToMongo } from './helpers'
 import path from 'path'
 
 const app = express();
@@ -11,11 +11,13 @@ app.use((req: any, _, next) => {
 });
 
 // // Middleware to handle all request methods for the same path
-app.use('/bin/:bin_id', (req, res) => {
+app.use('/bin/:bin_id', async (req, res) => {
   const { method, url, headers, query, body } = req;
   console.log({method, url, headers, query, body});
+  const mongo_request_id = await addToMongo(req)
 
   res.send(`Handled ${req.method} request`);
+  return mongo_request_id
 });
 
 // To serve public directory for the path '/public/bins/:bin_id'
@@ -49,7 +51,7 @@ app.get('/api/:bin_id/requests/:request_id', () => {
 app.get('/api/:bin_id', () => {
   // logic to get all requests for a specific binId
   // interacting with postgres to select all requests from request where requestbin_id == binId
-  return [{path: 'google.com', method: 'POST', time:'3:00PM', id: uuidv4()}]
+  return [{path: 'google.com', method: 'POST', time:'3:00PM'}]  //id: uuidv4()
 })
 
 app.listen(port, () =>
