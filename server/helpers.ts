@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express';
@@ -47,11 +50,31 @@ export async function addToMongo(req: express.Request): Promise<string | void> {
       query: JSON.stringify(query),
       body: JSON.stringify(body),
     });
-    const mongo_request_id = await request.save();
-    return String(mongo_request_id._id);
+    const mongoRequestId = await request.save();
+    return String(mongoRequestId._id);
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.log(error.message);
+      console.error(error.message);
+    }
+  }
+}
+
+export async function addToPostgres(
+  method: string,
+  url: string,
+  mongoRequestId: string | void,
+  binId: string,
+  requestId: string,
+) {
+  try {
+    const query = `
+    INSERT INTO request (requestbin_id, mongo_key, method, path_name, request_id) 
+    VALUES ($1, $2, $3, $4, $5)
+    `;
+    await pool.query(query, [binId, mongoRequestId, method, url, requestId]);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error.message);
     }
   }
 }

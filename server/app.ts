@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { createNewBinId, addToMongo } from './helpers';
+import { createNewBinId, addToMongo, addToPostgres } from './helpers';
 
 const app = express();
 const port = 3000;
@@ -18,6 +18,8 @@ app.use('/bin/:bin_id', async (req, res) => {
   const { method, url, headers, query, body } = req;
   console.log({ method, url, headers, query, body });
   const mongoRequestId = await addToMongo(req);
+  const requestId = uuidv4()
+  await addToPostgres(method, url, mongoRequestId, req.params.bin_id, requestId);
 
   res.send(`Handled ${req.method} request`);
   return mongoRequestId;
