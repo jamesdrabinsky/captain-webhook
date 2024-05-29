@@ -52,14 +52,16 @@ app.post('/api/create_new_bin', async (_, res) => {
 // Get info about specific request
 app.get('/api/:bin_id/requests/:request_id', () => ({}));
 
-app.get('/api/:bin_id', () => {
+app.get('/api/:bin_id', (_, res) => {
   // logic to get all requests for a specific binId
   // interacting with postgres to select all requests from request where requestbin_id == binId
-
+  console.log('path is /api/:bin_id');
   const requestId = uuidv4();
-  return [
+  res.json([
     { path: 'google.com', method: 'POST', time: '3:00PM', id: requestId },
-  ];
+    { path: 'stuff.com', method: 'GET', time: '12:00PM', id: requestId },
+    { path: 'not.com', method: 'POST', time: '5:00AM', id: requestId },
+  ]);
 });
 
 app.listen(port, () =>
