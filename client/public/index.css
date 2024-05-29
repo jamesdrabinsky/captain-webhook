@@ -161,3 +161,8 @@ ul {
   list-style: none;
   padding: 0;
 }
+
+code {
+  white-space: pre-wrap;
+  /* This preserves whitespace and wraps the text to fit within the container */
+}
