@@ -1,5 +1,6 @@
 import express from 'express';
 import { createNewBinId } from './helpers'
+import path from 'path'
 
 const app = express();
 const port = 3000;
@@ -9,47 +10,46 @@ app.use((req: any, _, next) => {
   next();
 });
 
-app.get('/', (_, res) => {
-  res.send('<h1>Hello World!</h1>');
-  // console.log(`Method: ${req.method}`);
-  // console.log(`URL: ${req.url}`);
-  // console.log('Headers:', req.headers);
-  // console.log('Query Params:', req.query);
-  // console.log('Body:', req.body);
-  // const pushThisIntoMongo = {
-  //   headers: req.headers,
-  //   body: req.body
-    // ...
-  // }
-  // await the mongoId
-  // push info to psql request table using the object
+// // Middleware to handle all request methods for the same path
+app.use('/bin/:bin_id', (req, res) => {
+  const { method, url, headers, query, body } = req;
+  console.log({method, url, headers, query, body});
 
-  
-  // 
+  res.send(`Handled ${req.method} request`);
 });
 
-app.get('/r', async (_, res) => {
+// To serve public directory for the path '/public/bins/:bin_id'
+app.use('/public/bin/:bin_id', express.static(path.join(__dirname, '../client/public')));
+
+app.get('/', (req, res) => {
+  res.send('<h1>Hello World!</h1>');
+  console.log(`Method: ${req.method}`);
+  console.log(`URL: ${req.url}`);
+  console.log('Headers:', req.headers);
+  console.log('Query Params:', req.query);
+  console.log('Body:', req.body);
+});
+
+app.post('/api/create_new_bin', async (_, res) => {
   // create new bin id
   // add check to ensure not a duplicate
   // store bin id in postgres
   const binId = await createNewBinId()
   console.log(binId)
 
-  // redirect to /:bin_id
-  res.redirect(`/r/${binId}`)
+  res.redirect(`/public/bin/${binId}`)
 })
 
-app.get('/r/:bin_id', (_, res) => {
-  res.send('<h1>Worked!</h1>')
+// API
+// Get info about specific request
+app.get('/api/:bin_id/requests/:request_id', () => {
+  return {}
 })
 
-app.post('/r/:bin_id', (req, res) => {
-  // https://9920-2603-8001-6600-f56-116d-2dc1-9df0-55a8.ngrok-free.app/r/67a73cd879824
-  console.log(`Method: ${req.method}`);
-  console.log(`URL: ${req.url}`);
-  console.log('Headers:', req.headers);
-  console.log('Query Params:', req.query);
-  console.log('Body:', req.body);
+app.get('/api/:bin_id', () => {
+  // logic to get all requests for a specific binId
+  // interacting with postgres to select all requests from request where requestbin_id == binId
+  return [{path: 'google.com', method: 'POST', time:'3:00PM', id: uuidv4()}]
 })
 
 app.listen(port, () =>
