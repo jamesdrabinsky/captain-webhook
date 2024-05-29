@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link rel="stylesheet" href="./index.css">
+  <script type="text/javascript" src="index.js"></script>
 </head>
+
 <body>
   <header class="top">
     <h1>Bin Title</h1>
     <p>Endpoint: https://captainhook.xyz/asdfpoie</p>
     <button>Copy</button>
     <!-- Press this sends a POST request to generate new bin -->
-    <button>**New**</button>
+    <button class="new">**New**</button>
   </header>
-  
+
   <!-- On page load: send GET request to populate this list with requests from specific endpoint -->
   <main>
     <section>
@@ -31,7 +34,7 @@
         </li>
       </ul>
     </section>
-  
+
     <!-- This area is populated when a specific request above is pressed -->
     <section>
       <h2>Request Details</h2>
@@ -58,6 +61,7 @@
         </ul>
       </article>
     </section>
-  </main>  
+  </main>
 </body>
+
 </html>
