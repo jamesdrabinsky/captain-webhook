@@ -1,7 +1,13 @@
 import express from 'express';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { createNewBinId, addToMongo, addToPostgres } from './helpers';
+import {
+  createNewBinId,
+  addToMongo,
+  addToPostgres,
+  getRequestsFromPostgres,
+  getRequestFromPostgres,
+} from './helpers';
 
 const app = express();
 const port = 3000;
@@ -14,12 +20,18 @@ app.use((req: any, _, next) => {
 });
 
 // // Middleware to handle all request methods for the same path
-app.use('/bin/:bin_id', async (req, res) => {
+app.all('/bin/:bin_id', async (req, res) => {
   const { method, url, headers, query, body } = req;
   console.log({ method, url, headers, query, body });
   const mongoRequestId = await addToMongo(req);
-  const requestId = uuidv4()
-  await addToPostgres(method, url, mongoRequestId, req.params.bin_id, requestId);
+  const requestId = uuidv4();
+  await addToPostgres(
+    method,
+    url,
+    mongoRequestId,
+    req.params.bin_id,
+    requestId,
+  );
 
   res.send(`Handled ${req.method} request`);
   return mongoRequestId;
@@ -52,18 +64,22 @@ app.post('/api/create_new_bin', async (_, res) => {
 
 // API
 // Get info about specific request
-app.get('/api/:bin_id/requests/:request_id', () => ({}));
+// user flow - when they click on a request within the full request table for a bin
+// This route returns null if doesn't exist, else return obj with request info
+app.get('/api/:bin_id/requests/:request_id', async (req, res) => {
+  const request = await getRequestFromPostgres(
+    req.params.bin_id,
+    req.params.request_id,
+  );
+  res.json(request);
+});
 
-app.get('/api/:bin_id', (_, res) => {
+app.get('/api/:bin_id', async (req, res) => {
   // logic to get all requests for a specific binId
   // interacting with postgres to select all requests from request where requestbin_id == binId
-  console.log('path is /api/:bin_id');
-  const requestId = uuidv4();
-  res.json([
-    { path: 'google.com', method: 'POST', time: '3:00PM', id: requestId },
-    { path: 'stuff.com', method: 'GET', time: '12:00PM', id: requestId },
-    { path: 'not.com', method: 'POST', time: '5:00AM', id: requestId },
-  ]);
+  const requests = await getRequestsFromPostgres(req.params.bin_id);
+  console.log(requests);
+  res.json(requests);
 });
 
 app.listen(port, () =>
