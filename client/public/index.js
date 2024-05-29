@@ -4,7 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
   newBtn.addEventListener('click', () => {
     console.log('new btn pressed')
     // fetch('https://captainwebhook.xyz/api/create_new_bin')
+    // 
   })
+
+  // add event listener for each request created
+  // populate 
 
   async function populateRequests() {
     console.log(window.location.href);
@@ -34,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ul.append(li);
     })
 
-    document.body.append(ul);
+    document.querySelector('.request-log').append(ul);
     console.log({ul})
     console.log('test1')
 

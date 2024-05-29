@@ -37,6 +37,8 @@ header.top button:hover {
   background-color: #0056b3;
 }
 
+*/
+
 /* Main content styles */
 main {
   padding: 20px;
@@ -95,4 +97,67 @@ article h3 {
 
 article ul {
   padding-left: 20px;
+}
+
+
+
+
+/* James  + Sean */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.top {
+  background-color: #f8f9fa;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.request-containers {
+  display: flex;
+  height: calc(100vh - 100px);
+  /* Adjust based on header height */
+  flex-direction: row;
+
+  width: 100%;
+}
+
+.request-log {
+  flex: 1;
+  max-width: 30%;
+  /* Ensures it takes up 1/3 of the container's width */
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.request-details {
+  flex: 2;
+  max-width: 60%;
+  /* Ensures it takes up 2/3 of the container's width */
+  padding: 20px;
+  overflow-y: auto;
+}
+
+h2,
+h3 {
+  margin-top: 0;
+}
+
+button {
+  margin: 10px;
+}
+
+input[type="text"] {
+  display: block;
+  margin: 10px 0;
+  padding: 8px;
+  width: calc(100% - 16px);
+}
+
+ul {
+  list-style: none;
+  padding: 0;
 }
