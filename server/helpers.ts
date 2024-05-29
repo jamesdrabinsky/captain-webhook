@@ -44,6 +44,9 @@ export async function createNewBinId(): Promise<string> {
 // Passed request object, parsed method, path, body, returns id
 export async function addToMongo(req: express.Request): Promise<string | void> {
   try {
+    if ((await checkBinExists(req.params.bin_id)) === false) {
+      throw new Error('Bin does not exist!');
+    }
     const { method, path, url, headers, query, body } = req;
     const request = new Request({
       method,
@@ -104,19 +107,63 @@ export async function getRequestsFromPostgres(binId: string): Promise<any> {
   }
 }
 
-// CREATE DATABASE cpt_webhook_psql OWNER dev_user;
-// GRANT ALL PRIVILEGES ON DATABASE
-// cpt_webhook_psql TO dev_user;
-// Path: http://localhost:3000/bin/XyZ123Abc4567
+export async function getRequestFromPostgres(binId: string, requestId: string) {
+  try {
+    if ((await checkBinExists(binId)) === false) {
+      throw new Error('Bin does not exist!');
+    }
 
-// app.get('/api/:bin_id', (_, res) => {
-//   // logic to get all requests for a specific binId
-//   // interacting with postgres to select all requests from request where requestbin_id == binId
-//   console.log('path is /api/:bin_id');
-//   const requests =
-//   // res.json([
-//   //   { path: 'google.com', method: 'POST', time: '3:00PM', id: requestId },
-//   //   { path: 'stuff.com', method: 'GET', time: '12:00PM', id: requestId },
-//   //   { path: 'not.com', method: 'POST', time: '5:00AM', id: requestId },
-//   // ]);
-// });
+    if ((await checkRequestExists(requestId)) === false) {
+      throw new Error('Request does not exist!');
+    }
+    const query = `
+    SELECT mongo_key FROM request WHERE request_id = $1;
+    `;
+    // URL: http://localhost:3000/api/XyZ123Abc4567/requests/4038b9f1-e949-4a48-9026-528fbdadc26f
+    console.log('requestExists function');
+    const result = await pool.query(query, [requestId]);
+    const mongoKey = result.rows[0].mongo_key;
+    console.log(mongoKey);
+
+    // TODO: Get Mongo key and return result object from mongo
+    const request = await Request.findById(mongoKey);
+    return request;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
+
+async function checkBinExists(binId: string) {
+  try {
+    const query = `
+    SELECT id FROM request_bin WHERE bin_id = $1;
+    `;
+    console.log('checkBinExists function');
+    const result = await pool.query(query, [binId]);
+    return result.rowCount !== 0;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+    return false;
+  }
+}
+
+async function checkRequestExists(requestId: string) {
+  try {
+    const query = `
+    SELECT mongo_key FROM request WHERE request_id = $1;
+    `;
+    console.log('checkRequestExists function');
+    const result = await pool.query(query, [requestId]);
+    return result.rowCount !== 0;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+    return false;
+  }
+}
+

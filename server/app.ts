@@ -6,6 +6,7 @@ import {
   addToMongo,
   addToPostgres,
   getRequestsFromPostgres,
+  getRequestFromPostgres,
 } from './helpers';
 
 const app = express();
@@ -63,20 +64,22 @@ app.post('/api/create_new_bin', async (_, res) => {
 
 // API
 // Get info about specific request
-app.get('/api/:bin_id/requests/:request_id', () => ({}));
+// user flow - when they click on a request within the full request table for a bin
+// This route returns null if doesn't exist, else return obj with request info
+app.get('/api/:bin_id/requests/:request_id', async (req, res) => {
+  const request = await getRequestFromPostgres(
+    req.params.bin_id,
+    req.params.request_id,
+  );
+  res.json(request);
+});
 
 app.get('/api/:bin_id', async (req, res) => {
   // logic to get all requests for a specific binId
   // interacting with postgres to select all requests from request where requestbin_id == binId
-  console.log('path is /api/:bin_id');
   const requests = await getRequestsFromPostgres(req.params.bin_id);
   console.log(requests);
   res.json(requests);
-  // res.json([
-  //   { path: 'google.com', method: 'POST', time: '3:00PM', id: requestId },
-  //   { path: 'stuff.com', method: 'GET', time: '12:00PM', id: requestId },
-  //   { path: 'not.com', method: 'POST', time: '5:00AM', id: requestId },
-  // ]);
 });
 
 app.listen(port, () =>
