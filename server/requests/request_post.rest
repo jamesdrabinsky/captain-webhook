@@ -1,4 +1,4 @@
-DELETE http://localhost:3000/bin/XyZ123Abc4567
+DELETE http://localhost:3000/bin/181d3e97458d4
 # Content-Type: application/json
 
 # {
