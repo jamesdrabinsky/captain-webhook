@@ -12,9 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
       'title**',
       `http://localhost:3000/public/bin/${id}`,
     );
-
-    document.querySelector('.requests-container').innerHTML = '';
+    populateRequests();
+    document.querySelector('.endpoint').textContent = window.location.href;
   });
+  document.querySelector('.endpoint').textContent = window.location.href;
 
   // add event listener for each request created
   document.querySelector('.request-log').addEventListener('click', (event) => {
@@ -140,13 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
       requestsByDate[dayKey].push({ time, method, path, id });
     });
     // sample data, remove when done
-    requestsByDate['05/28/2024'] = [
-      {
-        method: 'POST',
-        path: '/bin/XyZ123Abc4567',
-        id: '3c8fcfdc-880e-4636-913b-605a13ab1fdd',
-      },
-    ];
     return requestsByDate;
   }
 
@@ -238,56 +232,103 @@ document.addEventListener('DOMContentLoaded', () => {
     return ul;
   }
 
-  function sendMultipleRequests(url) {
-    const headersList = [
-      {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer exampleToken1',
-      },
-      {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer exampleToken2',
-      },
-      {
-        'Content-Type': 'application/json',
-        'Custom-Header': 'CustomValue',
-      },
-    ];
+  async function sendComplexRequests(url, numRequests) {
+      const methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+      const headers = [
+          {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer token123',
+              'Large-Header': 'aaa '.repeat(500)
+          },
+          {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Custom-Header': 'CustomValue',
+              'Another-Header': 'bbb '.repeat(500)
+          },
+          {
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+              'Additional-Header': 'ccc '.repeat(500)
+          },
+          {
+              'Authorization': 'Basic dXNlcjpwYXNz',
+              'Yet-Another-Header': 'ddd '.repeat(500)
+          }
+      ];
+      const payloads = [
+          JSON.stringify({
+              key1: 'value1',
+              key2: 'value2',
+              largeField: 'e'.repeat(1000)
+          }),
+          JSON.stringify({
+              keyA: 'valueA',
+              keyB: 'valueB',
+              anotherLargeField: 'f'.repeat(1000)
+          }),
+          new URLSearchParams({
+              param1: 'value1',
+              param2: 'value2',
+              longParam: 'g'.repeat(1000)
+          }).toString(),
+          'simple string payload',
+          JSON.stringify({
+              nested: {
+                  key: 'nestedValue',
+                  deepField: 'h'.repeat(1000)
+              }
+          })
+      ];
 
-    const bodyList = [
-      JSON.stringify({ message: 'First request' }),
-      JSON.stringify({ message: 'Second request' }),
-      JSON.stringify({ message: 'Third request' }),
-    ];
+      for (let i = 0; i < numRequests; i++) {
+          const method = methods[Math.floor(Math.random() * methods.length)];
+          const header = headers[Math.floor(Math.random() * headers.length)];
+          const payload = payloads[Math.floor(Math.random() * payloads.length)];
+          
+          const options = {
+              method: method,
+              headers: header
+          };
 
-    headersList.forEach((headers, index) => {
-      const requestOptions = {
-        method: 'POST',
-        headers: headers,
-        body: bodyList[index],
-      };
+          if (method !== 'GET' && method !== 'DELETE') {
+              if (header['Content-Type'] === 'application/x-www-form-urlencoded') {
+                  options.body = new URLSearchParams(payload).toString();
+              } else {
+                  options.body = payload;
+              }
+          }
 
-      fetch(url, requestOptions)
-        .then((response) => response.json())
-        .then((data) => console.log(`Response ${index + 1}:`, data))
-        .catch((error) =>
-          console.error(`Error in request ${index + 1}:`, error),
-        );
-    });
+          const requestUrl = `${url}`;
 
-    location.reload();
+          try {
+              const response = await fetch(requestUrl, options);
+              const data = await response.json();
+              console.log(`Response for request ${i + 1}:`, data);
+          } catch (error) {
+              console.error(`Error for request ${i + 1}:`, error);
+          }
+      }
   }
+
 
   const btn = document.createElement('button');
   btn.classList.add('test-request');
   btn.textContent = 'SEND TEST REQUESTS';
   document.body.append(btn);
 
-  document.querySelector('.test-request').addEventListener('click', () => {
-    sendMultipleRequests('http://localhost:3000/bin/8d7ac0495a874/');
+  document.querySelector('.test-request').addEventListener('click', async () => {
+    console.log(window.location.href.replace('/public', ''))
+    console.log('test')
+    await sendComplexRequests(window.location.href.replace('/public', ''), 5)
+    await populateRequests()
   });
 
   async function populateRequests() {
+    document.querySelector('.request-log').innerHTML = `
+    <h2 class="date">Today</h2>
+    <label for="search">Search</label>
+    <input type="text" id="search">
+    `;
     console.log(window.location.href);
     const path = window.location.href;
     const binId = path.split('/').at(-2);
