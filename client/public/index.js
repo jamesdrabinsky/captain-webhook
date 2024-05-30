@@ -10,10 +10,31 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // add event listener for each request created
   document.querySelector('.request-log').addEventListener('click', event => {
-
     populateRequestDetails(event)
     
   })
+
+  // export async function getRequestsFromPostgres(binId: string): Promise<any> {
+  //   try {
+  //     const query = `
+  //     SELECT path_name, method, request_id, to_char(created_at, 
+  //     'HH24:MI:SS') || ' ' || to_char(created_at, 'FMMonth DD, YYYY') as created_at FROM request r
+  //     JOIN request_bin b ON b.id = r.requestbin_id
+  //     WHERE b.bin_id = $1;
+  //     `;
+  
+  //     const result = await pool.query(query, [binId]);
+  //     console.log(result.rows);
+  //     return result.rows.map((obj: any) => {
+  //       const { path_name, method, request_id, created_at } = obj;
+  //       return { path: path_name, method, id: request_id, time: created_at };
+  //     });
+  //   } catch (error: unknown) {
+  //     if (error instanceof Error) {
+  //       console.error(error.message);
+  //     }
+  //   }
+  // }
 
   async function populateRequestDetails(event) {
     event.preventDefault()
@@ -23,31 +44,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // Details: Method + path test
     // Headers: Header text
     // Body: JSON string
-    // const path = window.location.href
-    // const binId = path.split('/').at(-2)
-    // const requestId = event.target.id
-    // const res = await fetch(`http://localhost:3000/api/${binId}/requests/${requestId}`);
-    // const { method, url, headers, query, body } = req;
+    const path = window.location.href
+    const binId = path.split('/').at(-2)
+    const requestId = event.target.id
+    console.log('requestId form index.js = ', requestId)
+    const response = await fetch(
+      `http://localhost:3000/api/${binId}/requests/${requestId}`
+    );
+    const data = await response.json();
+    console.log(data)
+    return
     
-    const sample = {
-      method: 'GET',
-      path: '/sample/sample',
-      headers: {
-        'host': 'github.com',
-        'content-type': 'application/json'
-      },
-      body: {
-        'id': '123245dfsjkfsd',
-        'timestamp': 'UTC 123255'
-      }
-    }
-    console.log(createDetails(sample))
-    console.log(createHeaders(sample))
-    console.log(createBody(sample))
+    // const sample = {
+    //   method: 'GET',
+    //   path: '/sample/sample',
+    //   headers: {
+    //     'host': 'github.com',
+    //     'content-type': 'application/json'
+    //   },
+    //   body: {
+    //     'id': '123245dfsjkfsd',
+    //     'timestamp': 'UTC 123255'
+    //   }
+    // }
+    // console.log(createDetails(sample))
+    // console.log(createHeaders(sample))
+    // console.log(createBody(sample))
 
-    document.querySelector('.request-details').append(createDetails(sample))
-    document.querySelector('.request-details').append(createHeaders(sample))
-    document.querySelector('.request-details').append(createBody(sample))
+    // document.querySelector('.request-details').append(createDetails(sample))
+    // document.querySelector('.request-details').append(createHeaders(sample))
+    // document.querySelector('.request-details').append(createBody(sample))
 
     // createHeaders(res)
     // createBody(res)
@@ -137,3 +163,9 @@ document.addEventListener('DOMContentLoaded', () => {
   populateRequests();
 })
 
+
+
+// curl --header "Content-Type: application/json" \
+//   --request POST \
+//   --data '{"username":"xyz","password":"xyz"}' \
+//   http://localhost:3000/api/login

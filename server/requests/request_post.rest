@@ -1,6 +1,6 @@
-POST http://localhost:3000/bin/PqR456LmN7890
+POST http://localhost:3000/bin/XyZ123Abc4567
 Content-Type: application/json
 
 {
-  "content": "Let's try this again!"
+  "content": "May 29 4:29"
 }
