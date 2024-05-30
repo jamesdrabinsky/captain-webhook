@@ -12,9 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
       'title**',
       `http://localhost:3000/public/bin/${id}`,
     );
-
-    document.querySelector('.requests-container').innerHTML = '';
+    populateRequests();
+    document.querySelector('.endpoint').textContent = window.location.href;
   });
+  document.querySelector('.endpoint').textContent = window.location.href;
 
   // add event listener for each request created
   document.querySelector('.request-log').addEventListener('click', (event) => {
@@ -140,13 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
       requestsByDate[dayKey].push({ time, method, path, id });
     });
     // sample data, remove when done
-    requestsByDate['05/28/2024'] = [
-      {
-        method: 'POST',
-        path: '/bin/XyZ123Abc4567',
-        id: '3c8fcfdc-880e-4636-913b-605a13ab1fdd',
-      },
-    ];
     return requestsByDate;
   }
 
@@ -322,11 +316,19 @@ document.addEventListener('DOMContentLoaded', () => {
   btn.textContent = 'SEND TEST REQUESTS';
   document.body.append(btn);
 
-  document.querySelector('.test-request').addEventListener('click', () => {
-    sendMultipleRequests('http://localhost:3000/bin/8d7ac0495a874/');
+  document.querySelector('.test-request').addEventListener('click', async () => {
+    console.log(window.location.href.replace('/public', ''))
+    console.log('test')
+    await sendComplexRequests(window.location.href.replace('/public', ''), 5)
+    await populateRequests()
   });
 
   async function populateRequests() {
+    document.querySelector('.request-log').innerHTML = `
+    <h2 class="date">Today</h2>
+    <label for="search">Search</label>
+    <input type="text" id="search">
+    `;
     console.log(window.location.href);
     const path = window.location.href;
     const binId = path.split('/').at(-2);
