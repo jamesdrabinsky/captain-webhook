@@ -3,37 +3,39 @@ document.addEventListener('DOMContentLoaded', () => {
   
   newBtn.addEventListener('click', async () => {
     console.log('new btn pressed')
-    const res = await fetch('/api/create_new_bin', {method: "POST"});
-    const id = await res.json()
-    console.log({res, id})
+    const res = await fetch('/api/create_new_bin', { method: "POST" });
+    const id = await res.json();
+    console.log({ res, id });
     // Change URL bar
     window.history.replaceState(null, "title**", `http://localhost:3000/public/bin/${id}`);
+
     document.querySelector('.requests-container').innerHTML = '';
   })
 
-  
   // add event listener for each request created
   document.querySelector('.request-log').addEventListener('click', event => {
+
     populateRequestDetails(event)
     document.querySelector('.request-details-grid').innerHTML = ''; 
   })
 
   async function populateRequestDetails(event) {
-    event.preventDefault()
+    event.preventDefault();
     if (event.target.className !== 'request-btn') {
-      return
+      return;
     }
     // Details: Method + path test
     // Headers: Header text
     // Body: JSON string
-    const path = window.location.href
-    const binId = path.split('/').at(-2)
-    const requestId = event.target.id
-    console.log('requestId form index.js = ', requestId)
+    const path = window.location.href;
+    const binId = path.split('/').at(-2);
+    const requestId = event.target.id;
+    console.log('requestId from index.js = ', requestId);
     const response = await fetch(
       `http://localhost:3000/api/${binId}/requests/${requestId}`
     );
     const data = await response.json();
+
     const {method, url, headers, query, body} = data
     const gridElement = document.querySelector('.request-details-grid');
     // 1 - header e.g. request_id and timestamp (always)
@@ -126,57 +128,110 @@ document.addEventListener('DOMContentLoaded', () => {
     return queryElement;
   }
 
-  function createBody(res) {
-    const row = document.createElement('div')
-    const col = document.createElement('div')
-    const col2 = document.createElement('div')
+  //   row.append(col, col2);
+  //   return row;
+  // }
 
-    col.textContent = 'Body'
-    const code = document.createElement('code')
-    code.textContent = JSON.stringify(res.body, null, 4)
-    col2.append(code)
+  // function createBody(res) {
+  //   const row = document.createElement('div');
+  //   const col = document.createElement('div');
+  //   const col2 = document.createElement('div');
 
-    row.append(col, col2)
-    return row
+  //   col.textContent = 'Body';
+  //   const code = document.createElement('code');
+  //   code.textContent = JSON.stringify(res.body, null, 4);
+  //   col2.append(code);
+
+  //   row.append(col, col2);
+  //   return row;
+  // }
+
+  function groupRequestsByDate(requests) { 
+    const options = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    };
+    
+    const requestsByDate = {};
+    requests.forEach(({ time, method, path, id }) => {
+      const dayKey = new Date(time).toLocaleString('en-US', options);
+      console.log('Day Key = ', dayKey);
+      requestsByDate[dayKey] ||= [];
+      requestsByDate[dayKey].push({ time, method, path, id });
+    });
+    // sample data, remove when done
+    requestsByDate['05/28/2024'] = [{"method": "POST", "path": "/bin/XyZ123Abc4567", "id": "3c8fcfdc-880e-4636-913b-605a13ab1fdd"}];
+    return requestsByDate;
   }
 
+  // container
+  // header - date - appended to container
+  // requests - unorderd list of buttons - appended to container
+  // containerList = array of div containers
+  function displayDailyRequests(requestsObj) {
+      let containerList = []
+      Object.entries(requestsObj).forEach(([ date, requestsArr ]) => {
+        let container = document.createElement('div')
+        const header = document.createElement('h2');
+        header.textContent = date;
+        container.append(header);
+        
+        const unorderList = createRequestButtons(requestsArr);
 
-  // populate
-  async function populateRequests() {
-    console.log(window.location.href);
-    const path = window.location.href
-    const binId = path.split('/').at(-2) // todo: change to regex
-    console.log(path, binId)
-    console.log('right before request')
-    const res = await fetch(`http://localhost:3000/api/${binId}`);
-    const requests = await res.json();
+        container.append(unorderList);
+        containerList.push(container)
+      });
 
-    console.log(requests)
+      console.log(containerList)
+      return containerList;
+  }
 
-    // req {path: string, method: string, time: string, id}
+  function createRequestButtons(requestArray) {
     const ul = document.createElement('ul');
-    ul.classList.add('requests-container');
-    requests.forEach(({ time, method, path, id }) => {
-      const li = document.createElement('li')
-      li.classList.add('request-item')
-      //const btn = document.createElement()
+    
+    requestArray.forEach(({ time, method, path, id }) => {
+      const li = document.createElement('li');
+      li.classList.add('request-item');
+
+  
       li.innerHTML = `
           <button class='request-btn'></button>
-        `
-    
+      `;
+
+      const timeOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true // This ensures the time is in 12-hour format with AM/PM
+      };
+      const formattedDate = new Date(time).toLocaleString('en-US', timeOptions);
+
+      let methodColor;
+      switch(method) {
+        case 'GET':
+          methodColor = 'green';
+          break;
+        case 'DELETE':
+          methodColor = 'red';
+          break;
+        default:
+          methodColor = 'blue';
+      }
+
       const btn = li.querySelector('.request-btn');
-      btn.textContent = `Time: ${time} | Method: ${method} | Path: ${path}`;
+      btn.innerHTML = `<span>${formattedDate} | </span>
+      <span style="color: ${methodColor}; font-weight: bold;">${method}</span>
+      <span> | ${path}</span>
+      `;
       btn.id = id;
-      console.log({li})
+      console.log({ li });
       ul.append(li);
-    })
+    }); 
 
-    document.querySelector('.request-log').append(ul);
-    console.log({ul})
-    console.log('test1')
-
-    // display requests in this UI
+    return ul;
   }
+
   
   populateRequests();
 
@@ -228,10 +283,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 })
 
+  async function populateRequests() {
+    console.log(window.location.href);
+    const path = window.location.href;
+    const binId = path.split('/').at(-2);
+    console.log(path, binId);
+    console.log('right before request');
+    const res = await fetch(`http://localhost:3000/api/${binId}`);
+    const requests = await res.json();
+
+    const requestsGrouped = groupRequestsByDate(requests);
+    console.log(requestsGrouped);
 
 
-// curl --header "Content-Type: application/json" \
-//   --request POST \
-//   --data '{"username":"xyz","password":"xyz"}' \
-//   http://localhost:3000/api/login
+    const dayContainerArr = displayDailyRequests(requestsGrouped);
+    document.querySelector('.request-log').append(...dayContainerArr)
+  }
+  
+  populateRequests();
+});
 
