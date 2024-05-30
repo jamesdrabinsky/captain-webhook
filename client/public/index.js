@@ -7,11 +7,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const id = await res.json();
     console.log({ res, id });
     // Change URL bar
-    window.history.replaceState(
-      null,
-      'title**',
-      `https://captainwebhook.xyz/public/bin/${id}`,
-    );
+    const path = window.location.href;
+    if (path.includes('www.')) {
+      window.history.replaceState(
+        null,
+        'title**',
+        `https://www.captainwebhook.xyz/public/bin/${id}`,
+      );
+    } else {
+      window.history.replaceState(
+        null,
+        'title**',
+        `https://captainwebhook.xyz/public/bin/${id}`,
+      );
+    }
     populateRequests();
     document.querySelector('.endpoint').textContent = window.location.href;
   });
