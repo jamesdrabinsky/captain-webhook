@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log({res, id})
     // Change URL bar
     window.history.replaceState(null, "title**", `http://localhost:3000/public/bin/${id}`);
+    document.querySelector('.requests-container').innerHTML = '';
   })
 
   
@@ -141,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // req {path: string, method: string, time: string, id}
     const ul = document.createElement('ul');
+    ul.classList.add('requests-container');
     requests.forEach(({ time, method, path, id }) => {
       const li = document.createElement('li')
       li.classList.add('request-item')
