@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.history.replaceState(
       null,
       'title**',
-      `http://localhost:3000/public/bin/${id}`,
+      `https://captainwebhook.xyz/public/bin/${id}`,
     );
     populateRequests();
     document.querySelector('.endpoint').textContent = window.location.href;
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const binId = path.split('/').at(-2);
     const requestId = btn.id;
     const response = await fetch(
-      `http://localhost:3000/api/${binId}/requests/${requestId}`,
+      `https://captainwebhook.xyz/api/${binId}/requests/${requestId}`,
     );
     const data = await response.json();
 
@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const binId = path.split('/').at(-2);
     console.log(path, binId);
     console.log('right before request');
-    const res = await fetch(`http://localhost:3000/api/${binId}`);
+    const res = await fetch(`https://captainwebhook.xyz/api/${binId}`);
     const requests = await res.json();
 
     const requestsGrouped = groupRequestsByDate(requests);
