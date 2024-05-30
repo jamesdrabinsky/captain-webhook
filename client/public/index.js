@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
   const newBtn = document.querySelector('.new');
   
-  newBtn.addEventListener('click', () => {
+  newBtn.addEventListener('click', async () => {
     console.log('new btn pressed')
-    // fetch('https://captainwebhook.xyz/api/create_new_bin')
-    // 
+    const res = await fetch('/api/create_new_bin', {method: "POST"});
+    const id = await res.json()
+    console.log({res, id})
+    // Change URL bar
+    window.history.replaceState(null, "title**", `http://localhost:3000/public/bin/${id}`);
   })
 
   
