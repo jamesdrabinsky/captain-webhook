@@ -14,22 +14,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // add event listener for each request created
   document.querySelector('.request-log').addEventListener('click', event => {
-
-    populateRequestDetails(event)
-    document.querySelector('.request-details-grid').innerHTML = ''; 
+    console.log(event.target)
+    if (event.target.matches('.request-btn, .request-btn *')) {
+      const btn = event.target.closest('button')
+    
+      document.querySelector('.request-details-grid').innerHTML = '';
+      populateRequestDetails(btn)
+    }
+    
+    
   })
 
-  async function populateRequestDetails(event) {
-    event.preventDefault();
-    if (event.target.className !== 'request-btn') {
-      return;
-    }
+  async function populateRequestDetails(btn) {
+    // event.preventDefault();
+
     // Details: Method + path test
     // Headers: Header text
     // Body: JSON string
     const path = window.location.href;
     const binId = path.split('/').at(-2);
-    const requestId = event.target.id;
+    const requestId = btn.id;
     console.log('requestId from index.js = ', requestId);
     const response = await fetch(
       `http://localhost:3000/api/${binId}/requests/${requestId}`
@@ -232,9 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return ul;
   }
 
-  
-  populateRequests();
-
   function sendMultipleRequests(url) {
     const headersList = [
         {
@@ -281,7 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.test-request').addEventListener('click', () => {
       sendMultipleRequests('http://localhost:3000/bin/80bb266e18354/');
   });
-})
 
   async function populateRequests() {
     console.log(window.location.href);
