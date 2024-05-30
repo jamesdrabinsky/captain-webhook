@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  createNewBinId,
+  createAndAddNewBinId,
   addToMongo,
   addToPostgres,
   getRequestsFromPostgres,
@@ -19,10 +19,17 @@ app.use((req: any, _, next) => {
   next();
 });
 
+// To serve public directory for the path '/public/bins/:bin_id'
+app.use(
+  '/public/bin/:bin_id',
+  express.static(path.join(__dirname, '../client/public')),
+);
+
 // // Middleware to handle all request methods for the same path
 app.all('/bin/:bin_id', async (req, res) => {
   const { method, url, headers, query, body } = req;
   console.log({ method, url, headers, query, body });
+  console.log('error related to app.all route')
   const mongoRequestId = await addToMongo(req);
   const requestId = uuidv4();
   await addToPostgres(
@@ -37,11 +44,10 @@ app.all('/bin/:bin_id', async (req, res) => {
   return mongoRequestId;
 });
 
-// To serve public directory for the path '/public/bins/:bin_id'
-app.use(
-  '/public/bin/:bin_id',
-  express.static(path.join(__dirname, '../client/public')),
-);
+// app.get('/public/bin/:bin_id', (_, res) => {
+//   console.log('redirected');
+//   res.sendFile(path.join(__dirname, '../client/public', 'index.html'));
+// });
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>');
@@ -56,10 +62,10 @@ app.post('/api/create_new_bin', async (_, res) => {
   // create new bin id
   // add check to ensure not a duplicate
   // store bin id in postgres
-  const binId = await createNewBinId();
-  console.log(binId);
-
-  res.redirect(`/public/bin/${binId}`);
+  const binId = await createAndAddNewBinId();
+  console.log({ binId });
+  res.json(binId);
+  // res.redirect(`/public/bin/${binId}`);
 });
 
 // API
@@ -67,6 +73,7 @@ app.post('/api/create_new_bin', async (_, res) => {
 // user flow - when they click on a request within the full request table for a bin
 // This route returns null if doesn't exist, else return obj with request info
 app.get('/api/:bin_id/requests/:request_id', async (req, res) => {
+  console.log('request', req.params.bin_id, req.params.request_id)
   const request = await getRequestFromPostgres(
     req.params.bin_id,
     req.params.request_id,
@@ -77,8 +84,9 @@ app.get('/api/:bin_id/requests/:request_id', async (req, res) => {
 app.get('/api/:bin_id', async (req, res) => {
   // logic to get all requests for a specific binId
   // interacting with postgres to select all requests from request where requestbin_id == binId
+  console.log('requestssss', req.params.bin_id)
   const requests = await getRequestsFromPostgres(req.params.bin_id);
-  console.log(requests);
+  console.log({ requests });
   res.json(requests);
 });
 

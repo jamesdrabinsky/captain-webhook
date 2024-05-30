@@ -25,7 +25,7 @@ export const pool = new Pool({
 mongoose.set('strictQuery', false);
 mongoose.connect(process.env.MONGODB_URI);
 
-export async function createNewBinId(): Promise<string> {
+export async function createAndAddNewBinId(): Promise<string> {
   while (true) {
     try {
       const uuidTest = uuidv4();
@@ -43,6 +43,7 @@ export async function createNewBinId(): Promise<string> {
 
 // Passed request object, parsed method, path, body, returns id
 export async function addToMongo(req: express.Request): Promise<string | void> {
+  console.log(req.params.bin_id)
   try {
     if ((await checkBinExists(req.params.bin_id)) === false) {
       throw new Error('Bin does not exist!');
@@ -141,6 +142,7 @@ async function checkBinExists(binId: string) {
     SELECT id FROM request_bin WHERE bin_id = $1;
     `;
     console.log('checkBinExists function');
+    console.log({ binId });
     const result = await pool.query(query, [binId]);
     return result.rowCount !== 0;
   } catch (error: unknown) {
@@ -166,4 +168,3 @@ async function checkRequestExists(requestId: string) {
     return false;
   }
 }
-
