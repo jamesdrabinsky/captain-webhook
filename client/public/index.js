@@ -8,36 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log({res, id})
     // Change URL bar
     window.history.replaceState(null, "title**", `http://localhost:3000/public/bin/${id}`);
+    document.querySelector('.requests-container').innerHTML = '';
   })
 
   
   // add event listener for each request created
   document.querySelector('.request-log').addEventListener('click', event => {
     populateRequestDetails(event)
-    
+    document.querySelector('.request-details-grid').innerHTML = ''; 
   })
-
-  // export async function getRequestsFromPostgres(binId: string): Promise<any> {
-  //   try {
-  //     const query = `
-  //     SELECT path_name, method, request_id, to_char(created_at, 
-  //     'HH24:MI:SS') || ' ' || to_char(created_at, 'FMMonth DD, YYYY') as created_at FROM request r
-  //     JOIN request_bin b ON b.id = r.requestbin_id
-  //     WHERE b.bin_id = $1;
-  //     `;
-  
-  //     const result = await pool.query(query, [binId]);
-  //     console.log(result.rows);
-  //     return result.rows.map((obj: any) => {
-  //       const { path_name, method, request_id, created_at } = obj;
-  //       return { path: path_name, method, id: request_id, time: created_at };
-  //     });
-  //   } catch (error: unknown) {
-  //     if (error instanceof Error) {
-  //       console.error(error.message);
-  //     }
-  //   }
-  // }
 
   async function populateRequestDetails(event) {
     event.preventDefault()
@@ -55,61 +34,96 @@ document.addEventListener('DOMContentLoaded', () => {
       `http://localhost:3000/api/${binId}/requests/${requestId}`
     );
     const data = await response.json();
-    console.log(data)
-    return
+    const {method, url, headers, query, body} = data
+    const gridElement = document.querySelector('.request-details-grid');
+    // 1 - header e.g. request_id and timestamp (always)
+    // 2 - Details e.g. Method and Path (always)
+    const methodPathTitle = document.createElement('h5')
+    methodPathTitle.textContent = 'Details'
+    gridElement.append(methodPathTitle)
+    const methodPathElement = createMethodPathDetails(method, url);
+    gridElement.append(methodPathElement);
+    // 3 - Headers (always? still add dynamically)
+    if (headers !== '{}') {
+      const headersTitle = document.createElement('h5');
+      headersTitle.textContent = 'Headers';
+      gridElement.append(headersTitle)
+      const headersElement = createHeaders(headers)
+      gridElement.append(headersElement)
+    }
+    // 4 - Query (sometimes, e.g. GET)
+    if (query !== '{}') {
+      console.log(data.query)
+      const queryTitle = document.createElement('h5');
+      queryTitle.textContent = 'Query';
+      gridElement.append(queryTitle);
+      const queryElement = createQueries(query)
+      gridElement.append(queryElement)
+    }
+    // 5 - Body (sometimes, e.g. POST)
+    if (body !== '{}') {
+      const bodyTitle = document.createElement('h5');
+      bodyTitle.textContent = 'Body'
+      gridElement.append(bodyTitle)
+      const bodyElement = document.createElement('code')
+      bodyElement.classList.add('request-details-body')
+      bodyElement.textContent = JSON.stringify(JSON.parse(body), null, 4)
+      gridElement.append(bodyElement)
+    }
+  }
     
-    // const sample = {
-    //   method: 'GET',
-    //   path: '/sample/sample',
-    //   headers: {
-    //     'host': 'github.com',
-    //     'content-type': 'application/json'
-    //   },
-    //   body: {
-    //     'id': '123245dfsjkfsd',
-    //     'timestamp': 'UTC 123255'
-    //   }
-    // }
-    // console.log(createDetails(sample))
-    // console.log(createHeaders(sample))
-    // console.log(createBody(sample))
-
-    // document.querySelector('.request-details').append(createDetails(sample))
-    // document.querySelector('.request-details').append(createHeaders(sample))
-    // document.querySelector('.request-details').append(createBody(sample))
-
-    // createHeaders(res)
-    // createBody(res)
-  }
-  // 
-
-  function createDetails(res) {
-    const row = document.createElement('div')
-    const col = document.createElement('div')
-    const col2 = document.createElement('div')
-
-    col.textContent = 'Details'
-    col2.textContent = `${res.method} ${res.path}`
-
-    row.append(col, col2)
-    return row
+  function createMethodPathDetails(method, path) {
+    const containerEl = document.createElement('div')
+    containerEl.classList.add('request-details-details')
+    containerEl.innerHTML = `
+    <span>
+      ${method}
+    </span>
+    <span>
+      ${path}
+    </span>
+    `
+    return containerEl
   }
 
-  function createHeaders(res) {
-    const row = document.createElement('div')
-    const col = document.createElement('div')
-    const col2 = document.createElement('div')
+  function createHeaders(headers) {
+    const headersElement = document.createElement('div');
+    headersElement.classList.add('request-details-headers')
 
-    col.textContent = 'Headers'
-
-    Object.entries(res.headers).forEach(([ key, value ]) => {
-      const span = document.createElement('div')
-      span.textContent = `${key} => ${value}`
-      col2.append(span)
+    Object.entries(JSON.parse(headers)).forEach(([headerKey, headerValue]) => {
+      const headerDiv = document.createElement('div');
+      headerDiv.classList.add('request-details-header');
+      const headerKeyElement = document.createElement('span');
+      headerKeyElement.classList.add('request-details-header-key');
+      headerKeyElement.textContent = headerKey
+      const headerValElement = document.createElement('span')
+      headerValElement.classList.add('request-details-header-value')
+      headerValElement.textContent = headerValue
+      headerDiv.append(headerKeyElement)
+      headerDiv.append(headerValElement)
+      headersElement.append(headerDiv)
     })
+    return headersElement;
+  }
+  
+  function createQueries(queries) {
+    const queryElement = document.createElement('div');
+    queryElement.classList.add('request-details-queries')
 
-    row.append(col, col2)
-    return row
+    Object.entries(JSON.parse(queries)).forEach(([queryKey, queryValue]) => {
+      const queryDiv = document.createElement('div');
+      queryDiv.classList.add('request-details-query');
+      const queryKeyElement = document.createElement('span');
+      queryKeyElement.classList.add('request-details-query-key');
+      queryKeyElement.textContent = queryKey
+      const queryValElement = document.createElement('span')
+      queryValElement.classList.add('request-details-query-value')
+      queryValElement.textContent = queryValue
+      queryDiv.append(queryKeyElement)
+      queryDiv.append(queryValElement)
+      queryElement.append(queryDiv)
+    })
+    return queryElement;
   }
 
   function createBody(res) {
@@ -141,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // req {path: string, method: string, time: string, id}
     const ul = document.createElement('ul');
+    ul.classList.add('requests-container');
     requests.forEach(({ time, method, path, id }) => {
       const li = document.createElement('li')
       li.classList.add('request-item')
@@ -164,6 +179,53 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   populateRequests();
+
+  function sendMultipleRequests(url) {
+    const headersList = [
+        {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer exampleToken1'
+        },
+        {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer exampleToken2'
+        },
+        {
+            'Content-Type': 'application/json',
+            'Custom-Header': 'CustomValue'
+        }
+    ];
+
+    const bodyList = [
+        JSON.stringify({ message: 'First request' }),
+        JSON.stringify({ message: 'Second request' }),
+        JSON.stringify({ message: 'Third request' })
+    ];
+
+    headersList.forEach((headers, index) => {
+        const requestOptions = {
+            method: 'POST',
+            headers: headers,
+            body: bodyList[index]
+        };
+
+        fetch(url, requestOptions)
+            .then(response => response.json())
+            .then(data => console.log(`Response ${index + 1}:`, data))
+            .catch(error => console.error(`Error in request ${index + 1}:`, error));
+    });
+    
+    location.reload();
+  }
+
+  const btn = document.createElement('button');
+  btn.classList.add('test-request');
+  btn.textContent = 'SEND TEST REQUESTS';
+  document.body.append(btn);
+    
+  document.querySelector('.test-request').addEventListener('click', () => {
+      sendMultipleRequests('http://localhost:3000/bin/80bb266e18354/');
+  });
 })
 
 
@@ -172,3 +234,4 @@ document.addEventListener('DOMContentLoaded', () => {
 //   --request POST \
 //   --data '{"username":"xyz","password":"xyz"}' \
 //   http://localhost:3000/api/login
+
