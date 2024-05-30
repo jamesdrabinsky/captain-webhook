@@ -1,6 +1,6 @@
-POST http://localhost:3000/bin/XyZ123Abc4567
-Content-Type: application/json
+DELETE http://localhost:3000/bin/XyZ123Abc4567
+# Content-Type: application/json
 
-{
-  "content": "May 29 4:29"
-}
+# {
+#   "content": "May 29 4:29"
+# }
