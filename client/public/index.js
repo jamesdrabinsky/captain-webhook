@@ -238,45 +238,84 @@ document.addEventListener('DOMContentLoaded', () => {
     return ul;
   }
 
-  function sendMultipleRequests(url) {
-    const headersList = [
-      {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer exampleToken1',
-      },
-      {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer exampleToken2',
-      },
-      {
-        'Content-Type': 'application/json',
-        'Custom-Header': 'CustomValue',
-      },
-    ];
+  async function sendComplexRequests(url, numRequests) {
+      const methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+      const headers = [
+          {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer token123',
+              'Large-Header': 'aaa '.repeat(500)
+          },
+          {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Custom-Header': 'CustomValue',
+              'Another-Header': 'bbb '.repeat(500)
+          },
+          {
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+              'Additional-Header': 'ccc '.repeat(500)
+          },
+          {
+              'Authorization': 'Basic dXNlcjpwYXNz',
+              'Yet-Another-Header': 'ddd '.repeat(500)
+          }
+      ];
+      const payloads = [
+          JSON.stringify({
+              key1: 'value1',
+              key2: 'value2',
+              largeField: 'e'.repeat(1000)
+          }),
+          JSON.stringify({
+              keyA: 'valueA',
+              keyB: 'valueB',
+              anotherLargeField: 'f'.repeat(1000)
+          }),
+          new URLSearchParams({
+              param1: 'value1',
+              param2: 'value2',
+              longParam: 'g'.repeat(1000)
+          }).toString(),
+          'simple string payload',
+          JSON.stringify({
+              nested: {
+                  key: 'nestedValue',
+                  deepField: 'h'.repeat(1000)
+              }
+          })
+      ];
 
-    const bodyList = [
-      JSON.stringify({ message: 'First request' }),
-      JSON.stringify({ message: 'Second request' }),
-      JSON.stringify({ message: 'Third request' }),
-    ];
+      for (let i = 0; i < numRequests; i++) {
+          const method = methods[Math.floor(Math.random() * methods.length)];
+          const header = headers[Math.floor(Math.random() * headers.length)];
+          const payload = payloads[Math.floor(Math.random() * payloads.length)];
+          
+          const options = {
+              method: method,
+              headers: header
+          };
 
-    headersList.forEach((headers, index) => {
-      const requestOptions = {
-        method: 'POST',
-        headers: headers,
-        body: bodyList[index],
-      };
+          if (method !== 'GET' && method !== 'DELETE') {
+              if (header['Content-Type'] === 'application/x-www-form-urlencoded') {
+                  options.body = new URLSearchParams(payload).toString();
+              } else {
+                  options.body = payload;
+              }
+          }
 
-      fetch(url, requestOptions)
-        .then((response) => response.json())
-        .then((data) => console.log(`Response ${index + 1}:`, data))
-        .catch((error) =>
-          console.error(`Error in request ${index + 1}:`, error),
-        );
-    });
+          const requestUrl = `${url}`;
 
-    location.reload();
+          try {
+              const response = await fetch(requestUrl, options);
+              const data = await response.json();
+              console.log(`Response for request ${i + 1}:`, data);
+          } catch (error) {
+              console.error(`Error for request ${i + 1}:`, error);
+          }
+      }
   }
+
 
   const btn = document.createElement('button');
   btn.classList.add('test-request');
