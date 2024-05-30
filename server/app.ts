@@ -32,6 +32,9 @@ app.all('/bin/:bin_id', async (req, res) => {
   console.log('error related to app.all route')
   const mongoRequestId = await addToMongo(req);
   const requestId = uuidv4();
+
+  
+  console.log('bin_id = ', req.params.bin_id, ' ', typeof req.params.bin_id)
   await addToPostgres(
     method,
     url,

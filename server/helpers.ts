@@ -70,15 +70,28 @@ export async function addToPostgres(
   method: string,
   url: string,
   mongoRequestId: string | void,
-  binId: string,
+  binId: string, // external binId
   requestId: string,
 ) {
+  let internalId;
+  try {
+    const queryBinTable = `SELECT id FROM request_bin WHERE bin_id = $1`
+    const resultBinTable = await pool.query(queryBinTable, [binId]);
+    internalId = resultBinTable.rows[0].id
+    console.log(internalId)
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+
   try {
     const query = `
     INSERT INTO request (requestbin_id, mongo_key, method, path_name, request_id) 
     VALUES ($1, $2, $3, $4, $5)
     `;
-    await pool.query(query, [binId, mongoRequestId, method, url, requestId]);
+    const res = await pool.query(query, [internalId, mongoRequestId, method, url, requestId]);
+    console.log(res);
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -124,10 +137,11 @@ export async function getRequestFromPostgres(binId: string, requestId: string) {
     console.log('requestExists function');
     const result = await pool.query(query, [requestId]);
     const mongoKey = result.rows[0].mongo_key;
-    console.log(mongoKey);
+    console.log('mongokey = ' + mongoKey);
 
     // TODO: Get Mongo key and return result object from mongo
     const request = await Request.findById(mongoKey);
+    console.log('request from mongo = ' + request)
     return request;
   } catch (error: unknown) {
     if (error instanceof Error) {
