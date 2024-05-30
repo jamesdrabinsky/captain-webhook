@@ -1,61 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./index.css" />
+    <script type="text/javascript" src="index.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="./index.css">
-  <script type="text/javascript" src="index.js"></script>
-</head>
+  <body>
+    <header class="top">
+      <p>Endpoint: https://captainhook.xyz/asdfpoie</p>
+      <button>Copy</button>
+      <!-- Press this sends a POST request to generate new bin -->
+      <button class="new">**New**</button>
+    </header>
 
-<body>
-  <header class="top">
-    <p>Endpoint: https://captainhook.xyz/asdfpoie</p>
-    <button>Copy</button>
-    <!-- Press this sends a POST request to generate new bin -->
-    <button class="new">**New**</button>
-  </header>
+    <!-- On page load: send GET request to populate this list with requests from specific endpoint -->
+    <main>
+      <div class="request-containers">
+        <section class="request-log">
+          <h2 class="date">Today</h2>
+          <label for="search">Search</label>
+          <input type="text" id="search" />
+          <!-- <ul class="requests"> -->
+          <!-- <li> -->
+          <!-- Clicking this will send GET for request info for this request, and populate the right side with info-->
+          <!-- <button>** Time | Method | Path **</button> -->
+          <!-- </li> -->
+          <!-- <li> -->
+          <!-- <button>** Time | Method | Path **</button> -->
+          <!-- </li> -->
+          <!-- </ul> -->
+        </section>
 
-  <!-- On page load: send GET request to populate this list with requests from specific endpoint -->
-  <main>
-    <div class="request-containers">
-      <section class="request-log">
-        <h2 class="date">Today</h2>
-        <label for="search">Search</label>
-        <input type="text" id="search">
-        <!-- <ul class="requests"> -->
-        <!-- <li> -->
-        <!-- Clicking this will send GET for request info for this request, and populate the right side with info-->
-        <!-- <button>** Time | Method | Path **</button> -->
-        <!-- </li> -->
-        <!-- <li> -->
-        <!-- <button>** Time | Method | Path **</button> -->
-        <!-- </li> -->
-        <!-- </ul> -->
-      </section>
+        <!-- This area is populated when a specific request above is pressed -->
 
-      <!-- This area is populated when a specific request above is pressed -->
-
-      <!-- title: HTTP Request
+        <!-- title: HTTP Request
       Details: Method + path test
       Headers: Header text
       Body: JSON string -->
-      <section class="request-details">
-        <h2>Request Details</h2>
-        <div class="request-details-header">
-          <h4>HTTP Request</h4>
-          <div>
-            <span class="request-details-id">
-              2h76ee8Xl4iEjVCfRfvJQoviieA</span>
-            <span
-              class="request-details-created_at">2h76ee8Xl4iEjVCfRfvJQoviieA2024-05-28T21:47:44.382Z</span>
+        <section class="request-details">
+          <h2>Request Details</h2>
+          <div class="request-details-header">
+            <h4>HTTP Request</h4>
+            <div>
+              <span class="request-details-id"></span>
+              <span class="request-details-created_at"></span>
+            </div>
           </div>
-        </div>
-        <div class="request-details-grid">
-        </div>
+          <div class="request-details-grid"></div>
 
-        <!-- <article>
+          <!-- <article>
           <h3>Path</h3>
           <ul>
             <li>path</li>
@@ -77,9 +73,9 @@
             <li>query param 3</li>
           </ul>
         </article> -->
-      </section>
-    </div>
-  </main>
-</body>
-
+        </section>
+      </div>
+    </main>
+  </body>
 </html>
+
