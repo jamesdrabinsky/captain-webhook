@@ -166,3 +166,23 @@ code {
   white-space: pre-wrap;
   /* This preserves whitespace and wraps the text to fit within the container */
 }
+
+h5 {
+  margin: 0;
+}
+
+.request-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 6fr;
+  row-gap: 1rem;
+}
+
+
+.request-details-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.request-details-headers {
+  margin-top: 1.5rem;
+}
