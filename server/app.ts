@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import cors from 'cors';
 import {
   createAndAddNewBinId,
   addToMongo,
@@ -12,6 +13,7 @@ import {
 const app = express();
 const port = 3000;
 
+app.use(cors());
 app.use(express.json());
 
 app.use((req: any, _, next) => {
@@ -29,12 +31,11 @@ app.use(
 app.all('/bin/:bin_id', async (req, res) => {
   const { method, url, headers, query, body } = req;
   console.log({ method, url, headers, query, body });
-  console.log('error related to app.all route')
+  console.log('error related to app.all route');
   const mongoRequestId = await addToMongo(req);
   const requestId = uuidv4();
 
-  
-  console.log('bin_id = ', req.params.bin_id, ' ', typeof req.params.bin_id)
+  console.log('bin_id = ', req.params.bin_id, ' ', typeof req.params.bin_id);
   await addToPostgres(
     method,
     url,
@@ -76,7 +77,7 @@ app.post('/api/create_new_bin', async (_, res) => {
 // user flow - when they click on a request within the full request table for a bin
 // This route returns null if doesn't exist, else return obj with request info
 app.get('/api/:bin_id/requests/:request_id', async (req, res) => {
-  console.log('request', req.params.bin_id, req.params.request_id)
+  console.log('request', req.params.bin_id, req.params.request_id);
   const request = await getRequestFromPostgres(
     req.params.bin_id,
     req.params.request_id,
@@ -87,7 +88,7 @@ app.get('/api/:bin_id/requests/:request_id', async (req, res) => {
 app.get('/api/:bin_id', async (req, res) => {
   // logic to get all requests for a specific binId
   // interacting with postgres to select all requests from request where requestbin_id == binId
-  console.log('requestssss', req.params.bin_id)
+  console.log('requestssss', req.params.bin_id);
   const requests = await getRequestsFromPostgres(req.params.bin_id);
   console.log({ requests });
   res.json(requests);
