@@ -51,10 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const { method, url, headers, query, body } = data;
     const gridElement = document.querySelector('.request-details-grid');
     // 1 - header e.g. request_id and timestamp (always)
-    document.querySelector('.request-details-id').textContent = requestId;
-    const { time, date } = formatTimeAndDate(btn.dataset.time);
-    document.querySelector('.request-details-created_at').textContent =
-      `${time} ${date}`;
+    // document.querySelector('.request-details-id').textContent = requestId;
+    // const { time, date } = formatTimeAndDate(btn.dataset.time);
+    // document.querySelector('.request-details-created_at').textContent =
+    //   `${time} ${date}`;
     // 2 - Details e.g. Method and Path (always)
     const methodPathTitle = document.createElement('h5');
     methodPathTitle.textContent = 'Details';
@@ -345,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ prompt })
+            body: JSON.stringify({ prompt: prompt.slice(0, 1000) })
         });
 
         if (!response.ok) {
@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   async function populateRequests() {
-    document.querySelector('.request-log').innerHTML = `<h2>Request Log</h2>`;
+    document.querySelector('.request-log').innerHTML = `<h2 class='log-title'>Request Log</h2>`;
     console.log(window.location.href);
     const path = window.location.href;
     const binId = path.split('/').at(-2);
@@ -370,6 +370,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('right before request');
     const res = await fetch(`https://captainwebhook.xyz/api/${binId}`);
     const requests = await res.json();
+    document.querySelector('.request-details-grid').innerHTML = '';
+
 
     const requestsGrouped = groupRequestsByDate(requests);
     console.log(requestsGrouped);
