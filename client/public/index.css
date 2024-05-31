@@ -280,6 +280,11 @@ h5 {
   gap: 1rem;
 }
 
+.request-details-title {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+}
 
 .request-details-header {
   display: flex;
@@ -342,6 +347,7 @@ h5 {
   /* Pointer cursor on hover */
   transition: background-color 0.3s ease, transform 0.3s ease;
   /* Smooth transition */
+  margin: 0;
 }
 
 .pirate:hover {
@@ -361,4 +367,12 @@ h5 {
 .pirate-talk {
   font-weight: bold;
   font-size: 1.4rem;
+}
+
+h2 {
+  margin: 0;
+}
+
+.log-title {
+  margin-bottom: 2rem;
 }
