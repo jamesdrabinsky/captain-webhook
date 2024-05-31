@@ -109,7 +109,6 @@ export async function getRequestsFromPostgres(binId: string): Promise<any> {
     `;
 
     const result = await pool.query(query, [binId]);
-    console.log(result.rows);
     return result.rows.map((obj: any) => {
       const { path_name, method, request_id, created_at } = obj;
       return { path: path_name, method, id: request_id, time: created_at };
@@ -137,6 +136,8 @@ export async function getRequestFromPostgres(binId: string, requestId: string) {
     console.log('requestExists function');
     const result = await pool.query(query, [requestId]);
     const mongoKey = result.rows[0].mongo_key;
+    console.log(result.rows[0].created_at);
+    console.log(typeof result.rows[0].created_at);
     console.log('mongokey = ' + mongoKey);
 
     // TODO: Get Mongo key and return result object from mongo

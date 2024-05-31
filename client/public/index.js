@@ -22,15 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
       );
     }
     populateRequests();
-    document.querySelector('.endpoint').textContent = window.location.href;
+    document.querySelector('.endpoint').textContent = 'Endpoint: ' + (window.location.href).replace('/public', '');
   });
-  document.querySelector('.endpoint').textContent = window.location.href;
+  document.querySelector('.endpoint').textContent = 'Endpoint: ' + (window.location.href).replace('/public', '');
 
   // add event listener for each request created
   document.querySelector('.request-log').addEventListener('click', (event) => {
     console.log(event.target);
     if (event.target.matches('.request-btn, .request-btn *')) {
       const btn = event.target.closest('button');
+      document.querySelector('.pirate-talk').innerHTML = '';
 
       document.querySelector('.request-details-grid').innerHTML = '';
       populateRequestDetails(btn);
@@ -107,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     Object.entries(JSON.parse(headers)).forEach(([headerKey, headerValue]) => {
       const headerDiv = document.createElement('div');
-      headerDiv.classList.add('request-details-header');
+      headerDiv.classList.add('request-details-headers-header');
       const headerKeyElement = document.createElement('span');
       headerKeyElement.classList.add('request-details-header-key');
       headerKeyElement.textContent = headerKey;
@@ -144,13 +145,15 @@ document.addEventListener('DOMContentLoaded', () => {
   function groupRequestsByDate(requests) {
     const requestsByDate = {};
     requests.forEach(({ time, method, path, id }) => {
+      console.log(time)
+      console.log(typeof time)
       const dayKey = formatTimeAndDate(time).date;
       console.log('Day Key = ', dayKey);
       requestsByDate[dayKey] ||= [];
-      requestsByDate[dayKey].push({ time, method, path, id });
+      requestsByDate[dayKey].unshift({ time, method, path, id });
     });
-    // sample data, remove when done
-    return requestsByDate;
+    
+    return requestsByDate
   }
 
   // container
@@ -172,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     console.log(containerList);
-    return containerList;
+    return containerList.toReversed();
   }
 
   function formatTimeAndDate(timeDateString) {
@@ -197,6 +200,9 @@ document.addEventListener('DOMContentLoaded', () => {
       'en-US',
       dateOptions,
     );
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
+    const localTimeString = timeDateString.toLocaleString('en-US', options);
+    console.log(localTimeString);
     return { time: formattedTime, date: formattedDate };
   }
 
@@ -234,7 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
       <span> | ${path}</span>
       `;
       btn.id = id;
-      console.log({ li });
       ul.append(li);
     });
 
@@ -247,44 +252,44 @@ document.addEventListener('DOMContentLoaded', () => {
           {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer token123',
-              'Large-Header': 'aaa '.repeat(500)
+              'Large-Header': 'aaa '.repeat(10)
           },
           {
               'Content-Type': 'application/x-www-form-urlencoded',
               'Custom-Header': 'CustomValue',
-              'Another-Header': 'bbb '.repeat(500)
+              'Another-Header': 'bbb '.repeat(10)
           },
           {
               'Accept': 'application/json',
               'X-Requested-With': 'XMLHttpRequest',
-              'Additional-Header': 'ccc '.repeat(500)
+              'Additional-Header': 'ccc '.repeat(10)
           },
           {
               'Authorization': 'Basic dXNlcjpwYXNz',
-              'Yet-Another-Header': 'ddd '.repeat(500)
+              'Yet-Another-Header': 'ddd '.repeat(10)
           }
       ];
       const payloads = [
           JSON.stringify({
               key1: 'value1',
               key2: 'value2',
-              largeField: 'e'.repeat(1000)
+              largeField: 'e '.repeat(1000)
           }),
           JSON.stringify({
               keyA: 'valueA',
               keyB: 'valueB',
-              anotherLargeField: 'f'.repeat(1000)
+              anotherLargeField: 'f '.repeat(1000)
           }),
           new URLSearchParams({
               param1: 'value1',
               param2: 'value2',
-              longParam: 'g'.repeat(1000)
+              longParam: 'g '.repeat(1000)
           }).toString(),
           'simple string payload',
           JSON.stringify({
               nested: {
                   key: 'nestedValue',
-                  deepField: 'h'.repeat(1000)
+                  deepField: 'h '.repeat(1000)
               }
           })
       ];
@@ -332,12 +337,34 @@ document.addEventListener('DOMContentLoaded', () => {
     await populateRequests()
   });
 
+  document.querySelector('.pirate').addEventListener('click', async () => {
+    try {
+        const prompt = document.querySelector('.request-details').textContent;
+        const p = document.querySelector('.pirate-talk')
+        p.textContent = 'Ahoy matey! 🏴‍☠️ Hold yer horses and wait fer a response from the pirate! 🏴‍☠️🦜⚓'
+        const response = await fetch('https://captainwebhook.xyz/api/ai', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ prompt })
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const res = await response.json();
+        console.log(res);
+        p.innerHTML = res.text;
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+
   async function populateRequests() {
-    document.querySelector('.request-log').innerHTML = `
-    <h2 class="date">Today</h2>
-    <label for="search">Search</label>
-    <input type="text" id="search">
-    `;
+    document.querySelector('.request-log').innerHTML = `<h2>Request Log</h2>`;
     console.log(window.location.href);
     const path = window.location.href;
     const binId = path.split('/').at(-2);

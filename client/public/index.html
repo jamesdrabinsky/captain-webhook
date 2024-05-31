@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,72 +11,42 @@
 
   <body>
     <header class="top">
-      <p class="endpoint">Endpoint: https://captainhook.xyz/asdfpoie</p>
-      <button>Copy</button>
-      <!-- Press this sends a POST request to generate new bin -->
-      <button class="new">New</button>
+      <img class='logo' width="250px" src="https://i.ibb.co/82dQtQM/captn-webhook-logo.png" alt="">
+      <img class='title-img' width="350px" src="https://i.ibb.co/g9dF7Kx/cpt-hook.webp" alt="">
     </header>
 
     <!-- On page load: send GET request to populate this list with requests from specific endpoint -->
     <main>
+      <div class="endpoint-container">
+        <p class="endpoint">Endpoint: Click to create endpoint</p>
+        <div class="endpoint-buttons">
+          <button>Copy</button>
+          <!-- Press this sends a POST request to generate new bin -->
+          <button class="new">New</button>
+        </div>
+      </div>
       <div class="request-containers">
         <section class="request-log">
-          <h2 class="date">Today</h2>
-          <label for="search">Search</label>
-          <input type="text" id="search" />
-          <!-- <ul class="requests"> -->
-          <!-- <li> -->
-          <!-- Clicking this will send GET for request info for this request, and populate the right side with info-->
-          <!-- <button>** Time | Method | Path **</button> -->
-          <!-- </li> -->
-          <!-- <li> -->
-          <!-- <button>** Time | Method | Path **</button> -->
-          <!-- </li> -->
-          <!-- </ul> -->
+          <h2>Request Log</h2>
         </section>
 
-        <!-- This area is populated when a specific request above is pressed -->
-
-        <!-- title: HTTP Request
-      Details: Method + path test
-      Headers: Header text
-      Body: JSON string -->
-        <section class="request-details">
-          <h2>Request Details</h2>
-          <div class="request-details-header">
-            <h4>HTTP Request</h4>
-            <div>
-              <span class="request-details-id"></span>
-              <span class="request-details-created_at"></span>
+        <section class="request-container">
+          <div class="request-details">
+            <h2>Request Details</h2>
+            <div class="request-details-header">
+              <h4>HTTP Request</h4>
+              <button class="pirate">Pirate</button>
+              <div class="request-details-container">
+                <span class="request-details-id"></span>
+                <span class="request-details-created_at"></span>
+              </div>
             </div>
+            <div class="request-details-grid"></div>
+            <p class="pirate-talk"></p>
           </div>
-          <div class="request-details-grid"></div>
-
-          <!-- <article>
-          <h3>Path</h3>
-          <ul>
-            <li>path</li>
-          </ul>
-        </article>
-        <article>
-          <h3>Headers</h3>
-          <ul>
-            <li>header1</li>
-            <li>header2</li>
-            <li>header3</li>
-          </ul>
-        </article>
-        <article>
-          <h3>Query</h3>
-          <ul>
-            <li>query param 1</li>
-            <li>query param 2</li>
-            <li>query param 3</li>
-          </ul>
-        </article> -->
         </section>
       </div>
     </main>
   </body>
-</html>
 
+</html>
