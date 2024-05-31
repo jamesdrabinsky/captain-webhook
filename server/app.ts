@@ -28,13 +28,14 @@ app.use('/', express.static(path.join(__dirname, '../client/public')));
 
 // // Middleware to handle all request methods for the same path
 app.all('/bin/:bin_id', async (req, res) => {
+  console.log('WEBHOOK body test', req, req.body)
   const { method, url, headers, query, body } = req;
-  console.log({ method, url, headers, query, body });
-  console.log('error related to app.all route');
+  // console.log({ method, url, headers, query, body });
+  // console.log('error related to app.all route');
   const mongoRequestId = await addToMongo(req);
   const requestId = uuidv4();
 
-  console.log('bin_id = ', req.params.bin_id, ' ', typeof req.params.bin_id);
+  // console.log('bin_id = ', req.params.bin_id, ' ', typeof req.params.bin_id);
   await addToPostgres(
     method,
     url,
@@ -49,7 +50,7 @@ app.all('/bin/:bin_id', async (req, res) => {
 
 app.post('/api/ai', async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const text = await fetchOpenAIOutput(req.body.prompt);
     res.json({ text });
   } catch (error) {
@@ -63,14 +64,8 @@ app.post('/api/ai', async (req, res) => {
 //   res.sendFile(path.join(__dirname, '../client/public', 'index.html'));
 // });
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello World!</h1>');
-  console.log(`Method: ${req.method}`);
-  console.log(`URL: ${req.url}`);
-  console.log('Headers:', req.headers);
-  console.log('Query Params:', req.query);
-  console.log('Body:', req.body);
-});
+// app.get('/', (req, res) => {
+// });
 
 app.post('/api/create_new_bin', async (_, res) => {
   // create new bin id

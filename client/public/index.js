@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `https://captainwebhook.xyz/api/${binId}/requests/${requestId}`,
     );
     const data = await response.json();
+    console.log(data, data.body)
 
     const { method, url, headers, query, body } = data;
     const gridElement = document.querySelector('.request-details-grid');
@@ -145,8 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function groupRequestsByDate(requests) {
     const requestsByDate = {};
     requests.forEach(({ time, method, path, id }) => {
-      console.log(time)
-      console.log(typeof time)
       const dayKey = formatTimeAndDate(time).date;
       console.log('Day Key = ', dayKey);
       requestsByDate[dayKey] ||= [];
@@ -202,7 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
     const localTimeString = timeDateString.toLocaleString('en-US', options);
-    console.log(localTimeString);
     return { time: formattedTime, date: formattedDate };
   }
 
