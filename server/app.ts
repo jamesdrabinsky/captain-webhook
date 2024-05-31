@@ -30,7 +30,7 @@ app.use('/', express.static(path.join(__dirname, '../client/public')));
 app.all('/bin/:bin_id', async (req, res) => {
   console.log('WEBHOOK body test', req, req.body)
   const { method, url, headers, query, body } = req;
-  // console.log({ method, url, headers, query, body });
+  console.log({ method, url, headers, query, body });
   // console.log('error related to app.all route');
   const mongoRequestId = await addToMongo(req);
   const requestId = uuidv4();
