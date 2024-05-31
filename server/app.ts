@@ -9,6 +9,8 @@ import {
   getRequestsFromPostgres,
   getRequestFromPostgres,
 } from './helpers';
+// @ts-ignore
+import fetchOpenAIOutput from './ai';
 
 const app = express();
 const port = 3000;
@@ -16,16 +18,13 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-app.use((req: any, _, next) => {
-  console.log('Subdomain:', req.headers.host.split('.')[0]);
-  next();
-});
-
 // To serve public directory for the path '/public/bins/:bin_id'
 app.use(
   '/public/bin/:bin_id',
   express.static(path.join(__dirname, '../client/public')),
 );
+
+app.use('/', express.static(path.join(__dirname, '../client/public')));
 
 // // Middleware to handle all request methods for the same path
 app.all('/bin/:bin_id', async (req, res) => {
@@ -46,6 +45,17 @@ app.all('/bin/:bin_id', async (req, res) => {
 
   res.send(`Handled ${req.method} request`);
   return mongoRequestId;
+});
+
+app.post('/api/ai', async (req, res) => {
+  try {
+    console.log(req.body);
+    const text = await fetchOpenAIOutput(req.body.prompt);
+    res.json({ text });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // app.get('/public/bin/:bin_id', (_, res) => {
@@ -82,6 +92,7 @@ app.get('/api/:bin_id/requests/:request_id', async (req, res) => {
     req.params.bin_id,
     req.params.request_id,
   );
+  console.log(request);
   res.json(request);
 });
 
